@@ -19,7 +19,7 @@ namespace Umbraco.Forms.Migration
 
         public MigrationService()
         {
-            
+
         }
         public void Migrate(string connString)
         {
@@ -27,6 +27,43 @@ namespace Umbraco.Forms.Migration
 
             // fix RecordFields where DataType is set to 'String' but data is stored as different type
             FixDataTypes(sql);
+
+            // Migrate PreValue Sources
+
+            var migratedPreValueSourceIds = new HashSet<Guid>();
+
+            using (var mPreValueSourceStorage = new PrevalueSourceStorage(sql))
+            using (var preValueSourceStorage = new Forms.Data.Storage.PrevalueSourceStorage())
+            {
+                foreach (var mPvs in mPreValueSourceStorage.GetAllPrevalueSources())
+                {
+                    if (mPvs.Type != null) // Skip unsupported pre-value source types
+                    {
+                        var pvs = new Umbraco.Forms.Core.FieldPreValueSource()
+                        {
+                            Id = mPvs.Id,
+                            Name = mPvs.Name,
+                            Type = mPvs.Type,
+                            Settings = mPvs.Settings
+                        };
+
+                        // Important: We need to use the update method, as the insert method would
+                        // assign a new GUID as the ID of the pre-value source and thus
+                        // break the migration.
+                        //
+                        // The update method works just as the insert method, with the only difference being that
+                        // no ID is assigned and different events are fired.
+                        preValueSourceStorage.UpdatePreValueSource(pvs);
+                    }
+                }
+
+                // Get IDs of all pre-value sources in destination environment.
+                migratedPreValueSourceIds.UnionWith(preValueSourceStorage
+                                                            .GetAll()
+                                                            .Select(pvs => pvs.Id));
+            }
+
+            // Migrate Forms
 
             using (var fs = new FormStorage(sql))
             {
@@ -88,6 +125,12 @@ namespace Umbraco.Forms.Migration
                                         prevalues.Add(prevalue.Value);
                                     }
                                     v4Field.PreValues = prevalues;
+                                }
+
+                                if (field.PreValueSourceId != Guid.Empty
+                                    && migratedPreValueSourceIds.Contains(field.PreValueSourceId))
+                                {
+                                    v4Field.PreValueSourceId = field.PreValueSourceId;
                                 }
 
                                 v4Field.Condition = new Core.FieldCondition();

@@ -10,7 +10,7 @@ namespace Umbraco.Forms.Migration.Data.Storage
     public class FieldStorage : IDisposable
     {
         private ISqlHelper sqlHelper;
-        
+
 
         private PrevalueSourceStorage prevalueSourceStorage;
         private SettingsStorage settings;
@@ -50,8 +50,16 @@ namespace Umbraco.Forms.Migration.Data.Storage
             while (rr.Read()) {
                 Field f = Field.CreateFromDataReader(rr);
 
-                if (!rr.IsNull("prevalueProvider"))
+                if (!rr.IsNull("prevalueProvider") && rr.GetGuid("prevalueProvider") != Guid.Empty)
+                {
                     f.PreValueSource = prevalueSourceStorage.GetPrevalueSource(rr.GetGuid("prevalueProvider"));
+
+                    if (f.PreValueSource != null
+                        && f.PreValueSource.Id != Guid.Empty)
+                    {
+                        f.PreValueSourceId = f.PreValueSource.Id;
+                    }
+                }
 
 
                 f.Settings = settings.GetSettingsAsList(f.Id);
@@ -92,16 +100,23 @@ namespace Umbraco.Forms.Migration.Data.Storage
             {
                 Field f = Field.CreateFromDataReader(rr);
 
-                //if (!rr.IsNull("prevalueProvider")) {
-                //    f.PreValueSource = prevalueSourceStorage.GetPrevalueSource(rr.GetGuid("prevalueProvider"));
-                    
+                if (!rr.IsNull("prevalueProvider") && rr.GetGuid("prevalueProvider") != Guid.Empty)
+                {
+                    f.PreValueSource = prevalueSourceStorage.GetPrevalueSource(rr.GetGuid("prevalueProvider"));
+
+                    if (f.PreValueSource != null
+                        && f.PreValueSource.Id != Guid.Empty)
+                    {
+                        f.PreValueSourceId = f.PreValueSource.Id;
+                    }
+
                 //    if(f.PreValueSource.Type != null)
                 //        f.PreValueSource.Type.LoadSettings(f.PreValueSource);
-                //}
+                }
 
                 f.Settings = settings.GetSettingsAsList(f.Id);
 
-               
+
                 //if (f.FieldType.HasSettings())
                 //    f.FieldType.LoadSettings(f.Settings);
 
@@ -132,13 +147,21 @@ namespace Umbraco.Forms.Migration.Data.Storage
                             ORDER by UFFields.Caption ASC";
 
             IRecordsReader rr = sqlHelper.ExecuteReader(sql);
-            
+
             while (rr.Read())
             {
                 Field f = Field.CreateFromDataReader(rr);
 
-                if (!rr.IsNull("prevalueProvider"))
+                if (!rr.IsNull("prevalueProvider") && rr.GetGuid("prevalueProvider") != Guid.Empty)
+                {
                     f.PreValueSource = prevalueSourceStorage.GetPrevalueSource(rr.GetGuid("prevalueProvider"));
+
+                    if (f.PreValueSource != null
+                        && f.PreValueSource.Id != Guid.Empty)
+                    {
+                        f.PreValueSourceId = f.PreValueSource.Id;
+                    }
+                }
 
                 f.Settings = settings.GetSettingsAsList(f.Id);
 
@@ -178,7 +201,7 @@ namespace Umbraco.Forms.Migration.Data.Storage
                             INNER JOIN UFfieldsets ON UFfieldsets.id = fieldset
                             INNER JOIN UFpages ON UFpages.id = UFfieldsets.page
                             where UFfields.id = @id";
-            
+
             IRecordsReader rr = sqlHelper.ExecuteReader(sql, sqlHelper.CreateParameter("@id", id));
 
             Field f = new Field();
@@ -186,10 +209,18 @@ namespace Umbraco.Forms.Migration.Data.Storage
                 f = Field.CreateFromDataReader(rr);
 
                 if (!rr.IsNull("prevalueProvider") && rr.GetGuid("prevalueProvider") != Guid.Empty)
+                {
                     f.PreValueSource = prevalueSourceStorage.GetPrevalueSource(rr.GetGuid("prevalueProvider"));
 
+                    if (f.PreValueSource != null
+                        && f.PreValueSource.Id != Guid.Empty)
+                    {
+                        f.PreValueSourceId = f.PreValueSource.Id;
+                    }
+                }
+
                 f.Settings = settings.GetSettingsAsList(f.Id);
-                
+
                 //if (f.FieldType.HasSettings())
                 //    f.FieldType.LoadSettings(f.Settings);
 
@@ -205,9 +236,9 @@ namespace Umbraco.Forms.Migration.Data.Storage
 
             rr.Dispose();
             return f;
-        }     
+        }
 
-      
+
 
         #region IDisposable Members
 
