@@ -100,6 +100,7 @@ namespace Umbraco.Forms.Migration
                         foreach(var fieldset in page.FieldSets)
                         {
                             var v4Fieldset = new Umbraco.Forms.Core.FieldSet();
+                            v4Fieldset.Id = fieldset.Id;
                             v4Fieldset.Caption = fieldset.Caption;
 
                             var v4Container = new Umbraco.Forms.Core.FieldsetContainer();
