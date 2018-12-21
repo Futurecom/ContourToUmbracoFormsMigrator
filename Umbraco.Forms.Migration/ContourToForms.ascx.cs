@@ -21,7 +21,8 @@ namespace Umbraco.Forms.Migration
             {
                 var s = new MigrationService
                 {
-                    IgnoreRecords = this.ignoreRecords.Checked
+                    IgnoreRecords = this.ignoreRecords.Checked,
+                    IgnoreObsoleteProperties = this.ignoreObsoleteProperties.Checked
                 };
                 s.Migrate(TextBox1.Text);
             }
@@ -32,7 +33,7 @@ namespace Umbraco.Forms.Migration
             }
             if(success)
                 Literal1.Text = "<h4>Migration completed<h4><p>Your forms have been migrated from the Contour instance.</p>";
-            
+
         }
     }
 }

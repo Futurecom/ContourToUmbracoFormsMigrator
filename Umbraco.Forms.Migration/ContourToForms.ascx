@@ -6,6 +6,9 @@
 <br />
 <asp:CheckBox ID="ignoreRecords" runat="server" Text="Don't import Form Responses" />
 <br />
+<br />
+<asp:CheckBox ID="ignoreObsoleteProperties" runat="server" Text="Don't migrate obsolete properties (ID and form reference of pages, page reference of fieldsets and IDs of conditions and rules)." />
+<br />
 <br/>
 <asp:Button ID="Button1" runat="server" Text="Start Migration" OnClick="Button1_Click" />
 <p><asp:Literal ID="Literal1" runat="server"></asp:Literal>

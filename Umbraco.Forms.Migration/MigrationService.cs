@@ -16,6 +16,7 @@ namespace Umbraco.Forms.Migration
         private const int DefaultStringValueLength = 255;
 
         public bool IgnoreRecords { get; set; }
+        public bool IgnoreObsoleteProperties { get; set; }
 
         public MigrationService()
         {
@@ -94,13 +95,22 @@ namespace Umbraco.Forms.Migration
                     {
                         var v4Page = new Umbraco.Forms.Core.Page();
 
+                        if (!IgnoreObsoleteProperties)
+                        {
+                            v4Page.Id = page.Id;
+                            v4Page.Form = v4Form.Id;
+                        }
                         v4Page.Caption = page.Caption;
-                       
-                       
+
+
                         foreach(var fieldset in page.FieldSets)
                         {
                             var v4Fieldset = new Umbraco.Forms.Core.FieldSet();
                             v4Fieldset.Id = fieldset.Id;
+                            if (!IgnoreObsoleteProperties)
+                            {
+                                v4Fieldset.Page = v4Page.Id;
+                            }
                             v4Fieldset.Caption = fieldset.Caption;
 
                             var v4Container = new Umbraco.Forms.Core.FieldsetContainer();
@@ -135,6 +145,10 @@ namespace Umbraco.Forms.Migration
                                 }
 
                                 v4Field.Condition = new Core.FieldCondition();
+                                if (!IgnoreObsoleteProperties)
+                                {
+                                    v4Field.Condition.Id = field.Condition.Id;
+                                }
                                 v4Field.Condition.Enabled = field.Condition.Enabled;
                                 v4Field.Condition.ActionType = (Core.FieldConditionActionType)System.Enum.Parse(typeof(Core.FieldConditionActionType), ((int)field.Condition.ActionType).ToString()); ;
                                 v4Field.Condition.LogicType = (Core.FieldConditionLogicType)System.Enum.Parse(typeof(Core.FieldConditionLogicType), ((int)field.Condition.LogicType).ToString()); ;
@@ -144,6 +158,10 @@ namespace Umbraco.Forms.Migration
                                 {
                                     var v4Rule = new Core.FieldConditionRule();
 
+                                    if (!IgnoreObsoleteProperties)
+                                    {
+                                        v4Rule.Id = rule.Id;
+                                    }
                                     v4Rule.Field = rule.Field;
                                     v4Rule.Operator = (Core.FieldConditionRuleOperator)System.Enum.Parse(typeof(Core.FieldConditionRuleOperator), ((int)rule.Operator).ToString()); ;
                                     v4Rule.Value = rule.Value;
