@@ -87,10 +87,6 @@ namespace Umbraco.Forms.Migration
                     v4Form.StoreRecordsLocally = form.StoreRecordsLocally;
                     v4Form.XPathOnSubmit = form.XPathOnSubmit;
 
-                    v4Form.NextLabel = "Next";
-                    v4Form.PrevLabel = "Previous";
-                    v4Form.SubmitLabel = "Submit";
-
                     foreach(var page in form.Pages)
                     {
                         var v4Page = new Umbraco.Forms.Core.Page();
