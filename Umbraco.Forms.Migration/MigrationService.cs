@@ -187,6 +187,12 @@ namespace Umbraco.Forms.Migration
                     using (var s = new Forms.Data.Storage.FormStorage())
                     {
                         v4Form = s.InsertForm(v4Form);
+
+                        v4Form.Created = form.Created;
+
+                        // Note: The form update is also required to work around issue CON-1051
+                        // (field aliases are not set in Umbraco Forms below version 4.3.0 when inserting a new form).
+                        s.UpdateForm(v4Form);
                     }
 
                     using (var ws = new WorkflowStorage(sql))
