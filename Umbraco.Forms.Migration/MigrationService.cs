@@ -66,6 +66,12 @@ namespace Umbraco.Forms.Migration
 
             // Migrate Forms
 
+            if (!IgnoreRecords)
+            {
+                // Fix the UFRecordDataString Value field length to be compatible with the old data.
+                FixDataStringLength(sql);
+            }
+
             using (var fs = new FormStorage(sql))
             {
                 foreach (var form in fs.GetAllForms(false))
@@ -217,9 +223,6 @@ namespace Umbraco.Forms.Migration
 
                     if (!IgnoreRecords)
                     {
-                        // Fix the UFRecordDataString Value field length to be compatible with the old data.
-                        FixDataStringLength(sql);
-
                         // store records
                         using (var rs = new RecordStorage(sql))
                         {
@@ -266,7 +269,9 @@ namespace Umbraco.Forms.Migration
                                     v4Record.Created = r.Created;
                                     v4Record.Updated = r.Updated;
 
-                                    rs4.UpdateRecord(v4Record, v4Form);
+                                    // Update the record via the database context as we only want to update two columns
+                                    // and the UpdateRecord method of the RecordStorage would delete and re-insert all the record field values.
+                                    ApplicationContext.Current.DatabaseContext.Database.Update(v4Record);
                                 }
                             }
                         }
