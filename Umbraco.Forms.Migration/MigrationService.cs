@@ -156,20 +156,25 @@ namespace Umbraco.Forms.Migration
                                 v4Field.Condition.LogicType = (Core.FieldConditionLogicType)System.Enum.Parse(typeof(Core.FieldConditionLogicType), ((int)field.Condition.LogicType).ToString()); ;
 
                                 var rules = new List<Core.FieldConditionRule>();
-                                foreach (var rule in field.Condition.Rules)
+
+                                if (field.Condition.Rules != null)
                                 {
-                                    var v4Rule = new Core.FieldConditionRule();
-
-                                    if (!IgnoreObsoleteProperties)
+                                    foreach (var rule in field.Condition.Rules)
                                     {
-                                        v4Rule.Id = rule.Id;
-                                    }
-                                    v4Rule.Field = rule.Field;
-                                    v4Rule.Operator = (Core.FieldConditionRuleOperator)System.Enum.Parse(typeof(Core.FieldConditionRuleOperator), ((int)rule.Operator).ToString()); ;
-                                    v4Rule.Value = rule.Value;
+                                        var v4Rule = new Core.FieldConditionRule();
 
-                                    rules.Add(v4Rule);
+                                        if (!IgnoreObsoleteProperties)
+                                        {
+                                            v4Rule.Id = rule.Id;
+                                        }
+                                        v4Rule.Field = rule.Field;
+                                        v4Rule.Operator = (Core.FieldConditionRuleOperator)System.Enum.Parse(typeof(Core.FieldConditionRuleOperator), ((int)rule.Operator).ToString()); ;
+                                        v4Rule.Value = rule.Value;
+
+                                        rules.Add(v4Rule);
+                                    }
                                 }
+
                                 v4Field.Condition.Rules = rules;
 
                                 using (var ss = new SettingsStorage(sql))
