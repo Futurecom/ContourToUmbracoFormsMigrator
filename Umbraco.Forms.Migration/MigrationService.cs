@@ -243,6 +243,7 @@ namespace Umbraco.Forms.Migration
                                     //}
 
                                     var v4Record = new Core.Record();
+                                    v4Record.UniqueId = r.Id;
                                     v4Record.Form = v4Form.Id;
                                     v4Record.Created = r.Created;
                                     v4Record.Updated = r.Updated;
