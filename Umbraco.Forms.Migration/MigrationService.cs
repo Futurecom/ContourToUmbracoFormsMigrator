@@ -210,7 +210,7 @@ namespace Umbraco.Forms.Migration
                     {
                         var wfs = ws.GetAllWorkFlows(form);
 
-                        foreach (var workflow in wfs)
+                        foreach (var workflow in wfs.OrderBy(wf => wf.SortOrder))
                         {
                             using (var wsv4 = new Forms.Data.Storage.WorkflowStorage())
                             {
